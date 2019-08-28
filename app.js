@@ -32,6 +32,7 @@ const main = async () => {
     const valuesYaml = await readFile(valuesYamlPath, 'utf8');
     const values = jsYaml.safeLoad(valuesYaml);
     values.systemversion = versions.systemversion;
+    values.fullSystemVersion = versions.fullSystemVersion;
     Object.keys(values).forEach(i => {
         if (values[i].image) {
             if (values[i].image.repository) {
