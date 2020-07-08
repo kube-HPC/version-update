@@ -76,3 +76,4 @@ typings/
 .fusebox/
 
 version-updater
+.vscode

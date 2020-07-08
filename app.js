@@ -1,3 +1,4 @@
+const YAWN = require('yawn-yaml/cjs')
 const request = require('request-promise');
 const jsYaml = require('js-yaml');
 const fs = require('fs');
@@ -30,7 +31,9 @@ const main = async () => {
     const versions = jsYaml.safeLoad(versionsYaml);
     console.log('System version: ', versions.systemversion);
     const valuesYaml = await readFile(valuesYamlPath, 'utf8');
-    const values = jsYaml.safeLoad(valuesYaml);
+    // const values = jsYaml.safeLoad(valuesYaml);
+    const valuesObject = new YAWN(valuesYaml);
+    const values = valuesObject.json;
     values.systemversion = versions.systemversion;
     values.fullSystemVersion = versions.fullSystemVersion;
     Object.keys(values).forEach(i => {
@@ -49,7 +52,8 @@ const main = async () => {
             }
         }
     })
-    const newVersionsYaml = jsYaml.safeDump(values);
+    valuesObject.json=values
+    const newVersionsYaml = valuesObject.yaml;
     await writeFile(newValuesYamlPath,newVersionsYaml);
 };
 
