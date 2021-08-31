@@ -5,25 +5,32 @@ const fs = require('fs');
 const promisify = require('util').promisify;
 
 const latestUrl = 'https://github.com/kube-HPC/release-manager/releases/latest'
-const valuesYamlPath = process.env.VALUES_YAML_PATH 
-const newValuesYamlPath = process.env.NEW_VALUES_YAML_PATH 
+const valuesYamlPath = process.env.VALUES_YAML_PATH
+const newValuesYamlPath = process.env.NEW_VALUES_YAML_PATH
+const TAG = process.env.TAG;
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
 const main = async () => {
-    if (!valuesYamlPath || !newValuesYamlPath){
+    if (!valuesYamlPath || !newValuesYamlPath) {
         console.error('Please set VALUES_YAML_PATH and NEW_VALUES_YAML_PATH env variables');
         process.exit(-1);
     }
-    const latest = await request.get({
-        url: latestUrl,
-        headers: {
-            Accept: 'application/json',
-        },
-        json: true
+    let latestTag;
+    if (TAG) {
+        latestTag = TAG;
+    }
+    else {
 
-    });
+        const latest = await request.get({
+            url: latestUrl,
+            headers: {
+                Accept: 'application/json',
+            },
+            json: true
 
-    const latestTag = latest.tag_name;
+        });
+        latestTag = latest.tag_name;
+    }
     console.log(latestTag);
     const versionsYaml = await request({
         url: `https://github.com/kube-HPC/release-manager/releases/download/${latestTag}/version.yaml`
@@ -52,9 +59,9 @@ const main = async () => {
             }
         }
     })
-    valuesObject.json=values
+    valuesObject.json = values
     const newVersionsYaml = valuesObject.yaml;
-    await writeFile(newValuesYamlPath,newVersionsYaml);
+    await writeFile(newValuesYamlPath, newVersionsYaml);
 };
 
 
